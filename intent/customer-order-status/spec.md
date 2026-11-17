@@ -12,89 +12,147 @@
 
 ### REQ-017 — Missing Order ID
 
-WHEN a customer requests the status of an order AND no Order ID has been provided, THE SYSTEM SHALL ask the customer to provide their Order ID.
+**WHEN** a customer requests the status of an order and no Order ID has been provided,
 
-THE SYSTEM SHALL NOT retrieve or disclose any order information until the required Order ID is provided and the customer's authorisation to access that order has been confirmed.
+**THE SYSTEM SHALL** ask the customer to provide their Order ID.
+
+**THE SYSTEM SHALL NOT** retrieve or disclose any order information until the required Order ID is provided and the customer's authorisation to access that order has been confirmed.
 
 ### REQ-018 — Valid Order ID and Status Retrieval
 
-WHEN a customer requests the status of an order AND provides a valid Order ID AND the customer is authorised to access that order, THE SYSTEM SHALL retrieve the current order status from the approved order information source.
+**WHEN** a customer requests the status of an order, provides a valid Order ID and is authorised to access that order,
 
-THE SYSTEM SHALL present the retrieved status in a clear, friendly and understandable format.
+**THE SYSTEM SHALL** retrieve the current order status from the approved order information source.
 
-THE SYSTEM SHALL NOT invent or assume an order status when the information is unavailable.
+**THE SYSTEM SHALL** present the retrieved status in a clear, friendly and understandable format.
+
+**THE SYSTEM SHALL NOT** invent or assume an order status when the information is unavailable.
 
 ### REQ-019 — Invalid or Unknown Order ID
 
-WHEN a customer requests the status of an order AND provides an invalid or unknown Order ID, THE SYSTEM SHALL inform the customer that the order could not be found or verified.
+**WHEN** a customer requests the status of an order and provides an invalid or unknown Order ID,
 
-THE SYSTEM SHALL ask the customer to check the Order ID and try again.
+**THE SYSTEM SHALL** inform the customer that the order could not be found or verified.
 
-THE SYSTEM SHALL NOT disclose information about other orders or customers.
+**THE SYSTEM SHALL** ask the customer to check the Order ID and try again.
 
-THE SYSTEM SHALL NOT invent an order status or claim that an order exists without evidence.
+**THE SYSTEM SHALL NOT** disclose information about other orders or customers.
+
+**THE SYSTEM SHALL NOT** invent an order status or claim that an order exists without evidence.
 
 ### REQ-020 — Order Authorisation and Access Control
 
-WHEN a customer provides an Order ID AND requests information about that order, THE SYSTEM SHALL verify that the order belongs to the authenticated customer or that the customer is otherwise authorised to access it.
+**WHEN** a customer provides an Order ID and requests information about that order,
 
-WHEN the customer is not authorised to access the requested order, THE SYSTEM SHALL refuse to disclose its information.
+**THE SYSTEM SHALL** verify that the order belongs to the authenticated customer or that the customer is otherwise authorised to access it.
 
-THE SYSTEM SHALL provide a generic response that does not reveal whether the order exists or belongs to another customer.
+**WHEN** the customer is not authorised to access the requested order,
 
-THE SYSTEM SHALL NOT disclose order status, customer details, or other sensitive information without confirmed authorisation.
+**THE SYSTEM SHALL** refuse to disclose its information.
+
+**THE SYSTEM SHALL** provide a generic response that does not reveal whether the order exists or belongs to another customer.
+
+**THE SYSTEM SHALL NOT** disclose order status, customer details or other sensitive information without confirmed authorisation.
 
 ### REQ-021 — Order Information Source Unavailable
 
-WHEN a customer requests the status of an order AND the approved order information source is unavailable, times out, or returns an error, THE SYSTEM SHALL inform the customer that the order status cannot currently be retrieved.
+**WHEN** a customer requests the status of an order and the approved order information source is unavailable, times out or returns an error,
 
-THE SYSTEM SHALL provide a clear and friendly message suggesting the customer try again later or contact customer service.
+**THE SYSTEM SHALL** inform the customer that the order status cannot currently be retrieved.
 
-THE SYSTEM SHALL NOT invent an order status, present outdated information as current, or claim that the order does not exist.
+**THE SYSTEM SHALL** provide a clear and friendly message suggesting the customer try again later or contact customer service.
 
-THE SYSTEM SHALL NOT expose internal error messages, system details, or sensitive technical information to the customer.
+**THE SYSTEM SHALL NOT** invent an order status, present outdated information as current or claim that the order does not exist.
+
+**THE SYSTEM SHALL NOT** expose internal error messages, system details or sensitive technical information to the customer.
 
 ### REQ-022 — Order Status Presentation
 
-WHEN an authorised order status has been successfully retrieved, THE SYSTEM SHALL present the status in clear, customer-friendly language.
+**WHEN** an authorised order status has been successfully retrieved,
 
-THE SYSTEM SHALL display the Order ID and its current status.
+**THE SYSTEM SHALL** present the status in clear, customer-friendly language.
 
-THE SYSTEM SHALL NOT display unnecessary personal information or internal system details.
+**THE SYSTEM SHALL** display the Order ID and its current status.
+
+**THE SYSTEM SHALL NOT** display unnecessary personal information or internal system details.
 
 ### REQ-023 — Read-Only Order Status Enquiries
 
-WHEN a customer requests the status of an order, THE SYSTEM SHALL retrieve and present order information without modifying the order.
+**WHEN** a customer requests the status of an order,
 
-THE SYSTEM SHALL NOT change order statuses, cancel orders, update delivery information, or perform any other order modification.
+**THE SYSTEM SHALL** retrieve and present order information without modifying the order.
 
-WHEN a customer requests an order modification, THE SYSTEM SHALL explain that the requested action is not supported by this feature.
+**THE SYSTEM SHALL NOT** change order statuses, cancel orders, update delivery information or perform any other order modification.
+
+**WHEN** a customer requests an order modification,
+
+**THE SYSTEM SHALL** explain that the requested action is not supported by this feature.
 
 ## Acceptance Scenarios
 
 ### AC-001 — Missing Order ID (REQ-017)
 
-Scenario: Customer does not provide an Order ID Given a customer has been authenticated When the customer asks for their order status And no Order ID has been provided Then the system asks for the Order ID And no order information is disclosed
+```gherkin
+Scenario: Customer does not provide an Order ID
+  Given a customer has been authenticated
+  When the customer asks for their order status
+  And no Order ID has been provided
+  Then the system asks for the Order ID
+  And no order information is disclosed
+```
 
 ### AC-002 — Valid Order Status (REQ-018, REQ-022)
 
-Scenario: Customer requests an authorised order Given a customer has been authenticated And an order belongs to that customer When the customer requests its status using the Order ID Then the system retrieves the current order status And presents the Order ID and status clearly
+```gherkin
+Scenario: Customer requests an authorised order
+  Given a customer has been authenticated
+  And an order belongs to that customer
+  When the customer requests its status using the Order ID
+  Then the system retrieves the current order status
+  And presents the Order ID and status clearly
+```
 
 ### AC-003 — Unknown Order ID (REQ-019)
 
-Scenario: Customer provides an unknown Order ID Given a customer has been authenticated When the customer provides an unknown Order ID Then the system asks the customer to check the Order ID And does not disclose other order information
+```gherkin
+Scenario: Customer provides an unknown Order ID
+  Given a customer has been authenticated
+  When the customer provides an unknown Order ID
+  Then the system asks the customer to check the Order ID
+  And does not disclose other order information
+```
 
 ### AC-004 — Unauthorised Order (REQ-020)
 
-Scenario: Customer requests another customer's order Given a customer has been authenticated And the requested order belongs to another customer When the customer requests its status Then the system refuses to disclose order information And does not confirm whether the order exists
+```gherkin
+Scenario: Customer requests another customer's order
+  Given a customer has been authenticated
+  And the requested order belongs to another customer
+  When the customer requests its status
+  Then the system refuses to disclose order information
+  And does not confirm whether the order exists
+```
 
 ### AC-005 — Information Source Unavailable (REQ-021)
 
-Scenario: Order information source is unavailable Given a customer has been authenticated And the order information source is unavailable When the customer requests an order status Then the system explains that the status cannot be retrieved And does not invent an order status
+```gherkin
+Scenario: Order information source is unavailable
+  Given a customer has been authenticated
+  And the order information source is unavailable
+  When the customer requests an order status
+  Then the system explains that the status cannot be retrieved
+  And does not invent an order status
+```
 
 ### AC-006 — Read-Only Operation (REQ-023)
 
-Scenario: Customer requests an order modification Given a customer has been authenticated When the customer asks to cancel an order Then the system explains that cancellation is not supported And the order remains unchanged
+```gherkin
+Scenario: Customer requests an order modification
+  Given a customer has been authenticated
+  When the customer asks to cancel an order
+  Then the system explains that cancellation is not supported
+  And the order remains unchanged
+```
 
 ## Constraints and Boundaries
 
