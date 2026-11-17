@@ -46,3 +46,10 @@ Every implementation must provide:
 ## Human approval
 Stop at architectural decisions, uncertain requirements,
 security changes and release boundaries.
+
+## Feature document conventions
+- Follow `intent/README.md` for document metadata, status, versioning, dates and traceability.
+- When proposing a new feature, begin from `intent/_templates/intent.md` and `intent/_templates/spec.md`; propose `plan.md` only after requirements are sufficiently understood.
+- Use `docs/adr/_template.md` for significant architectural decisions.
+- Do not invent approval, creation or update dates, revision history, target release dates, owners or test results.
+- Do not implement a feature based solely on draft documents; obtain the engineering lead's explicit authorisation.
