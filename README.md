@@ -30,23 +30,37 @@ flowchart TD
 
 ## Run locally
 
-Requires Python 3.11+ and Node.js 20+.
+Requires **Python 3.14** and Node.js 22+. Python 3.14.10 is pinned in `backend/.python-version` for CI and Render. Any installed Python 3.14.x interpreter can be used locally.
 
-Backend:
+### Windows / VS Code (PowerShell)
+
+From the repository root:
+
+~~~powershell
+cd backend
+py -3.14 --version
+py -3.14 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000
+~~~
+
+If `backend/.venv` already exists from Python 3.12, **delete that old virtual environment first** (`Remove-Item -Recurse -Force .venv` while inside `backend`, with any running interpreter stopped) and recreate it with `py -3.14 -m venv .venv`. VS Code: **Python: Select Interpreter** → `backend\\.venv\\Scripts\\python.exe`.
+
+### Linux / macOS
 
 ~~~bash
 cd backend
-python -m venv .venv
-# Linux/macOS: source .venv/bin/activate
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-pip install -r requirements-dev.txt
+python3.14 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-dev.txt
 python -m pytest -q
-uvicorn app.main:app --reload --port 8000
+python -m uvicorn app.main:app --reload --port 8000
 ~~~
 
-API docs at http://localhost:8000/docs.
+API docs at http://localhost:8000/docs; GET `/health` returns the actual `python_version`.
 
-Frontend, in a separate terminal:
+### React frontend (second terminal, repository root)
 
 ~~~bash
 cd frontend
@@ -54,11 +68,13 @@ npm install
 npm run dev
 ~~~
 
+Open http://localhost:5173. The frontend uses `VITE_API_URL` if set; otherwise it calls `http://localhost:8000`. See `frontend/.env.example`.
+
 Open http://localhost:5173. The frontend uses VITE_API_URL if set; otherwise it calls localhost:8000. See frontend/.env.example.
 
 ## Render deployment
 
-The render.yaml Blueprint requests two services: a free Python Web Service named agentic-reliability-api and a static site named agentic-reliability-lab. Import it in Render Dashboard and **inspect quoted pricing before approving any plan**. The free backend sleeps when idle, leading to a cold-start delay.
+The `render.yaml` Blueprint manages two services in the `Agentic Reliability Lab / Production` Render project: a free Python 3.14 Web Service and a static React site. Inspect pricing before applying subsequent infrastructure changes. The free backend sleeps when idle, leading to a cold-start delay.
 
 If Render assigns different service URLs, update VITE_API_URL in the static site's build settings and CORS_ORIGINS in the backend service to match. Both frontend and backend must be reachable.
 
