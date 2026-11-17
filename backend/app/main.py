@@ -1,4 +1,5 @@
 import os
+import platform
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .models import RunRequest, RunResponse, EvaluationReport
@@ -17,7 +18,7 @@ app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=Fals
 @app.get("/health")
 def health():
     return {"status": "ok", "mode": "deterministic", "live_llm": False,
-            "synthetic_data_only": True}
+            "synthetic_data_only": True, "python_version": platform.python_version()}
 
 @app.post("/api/agent/run", response_model=RunResponse)
 def run(payload: RunRequest):
