@@ -34,15 +34,15 @@ THE SYSTEM SHALL NOT disclose information about other orders or customers.
 
 THE SYSTEM SHALL NOT invent an order status or claim that an order exists without evidence.
 
-### REQ-019 — Invalid or Unknown Order ID
+### REQ-020 — Order Authorisation and Access Control
 
-WHEN a customer requests the status of an order AND provides an invalid or unknown Order ID, THE SYSTEM SHALL inform the customer that the order could not be found or verified.
+WHEN a customer provides an Order ID AND requests information about that order, THE SYSTEM SHALL verify that the order belongs to the authenticated customer or that the customer is otherwise authorised to access it.
 
-THE SYSTEM SHALL ask the customer to check the Order ID and try again.
+WHEN the customer is not authorised to access the requested order, THE SYSTEM SHALL refuse to disclose its information.
 
-THE SYSTEM SHALL NOT disclose information about other orders or customers.
+THE SYSTEM SHALL provide a generic response that does not reveal whether the order exists or belongs to another customer.
 
-THE SYSTEM SHALL NOT invent an order status or claim that an order exists without evidence.
+THE SYSTEM SHALL NOT disclose order status, customer details, or other sensitive information without confirmed authorisation.
 
 ### REQ-021 — Order Information Source Unavailable
 
