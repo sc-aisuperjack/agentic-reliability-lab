@@ -1,8 +1,15 @@
 # INTENT-002: Synthetic Refund Eligibility Agent
 
-Status: Proposed
-Owner: Engineering Lead
-Feature: Refund Eligibility
+**Status:** Implemented  
+**Version:** 1.0.0  
+**Created:** 2026-11-17  
+**Last Updated:** 2026-11-17  
+**Owner:** Engineering Lead  
+**Related Specification:** SPEC-002  
+**Target Release:** Refund Eligibility Feature  
+**Released:** 2026-11-17
+
+Status: Proposed Owner: Engineering Lead Feature: Refund Eligibility
 
 ## Problem
 
@@ -45,9 +52,7 @@ The application should retrieve the relevant order, check the selected tenant's 
 
 ## Success criteria
 
-A user can submit a refund eligibility question and receive a correct, explainable result based on the authorised synthetic data.
-All existing evaluations must continue to pass.
-New acceptance tests must demonstrate the eligibility behaviour.
+A user can submit a refund eligibility question and receive a correct, explainable result based on the authorised synthetic data. All existing evaluations must continue to pass. New acceptance tests must demonstrate the eligibility behaviour.
 
 ## Non-functional requirements
 
