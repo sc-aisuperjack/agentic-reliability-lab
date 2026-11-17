@@ -1,4 +1,5 @@
 from typing import Literal
+from datetime import date
 from pydantic import BaseModel, Field
 
 Tenant = Literal["atlas", "beacon"]
@@ -19,6 +20,10 @@ class Citation(BaseModel):
     title: str
     quote: str
 
+class EligibilityResult(BaseModel):
+    status: Literal["eligible", "ineligible", "needs_more_information", "already_refunded", "blocked_or_unsupported"]
+    assessment_date: date | None = None
+
 class RunResponse(BaseModel):
     run_id: str
     mode: str = "deterministic"
@@ -29,6 +34,7 @@ class RunResponse(BaseModel):
     citations: list[Citation]
     evidence_count: int
     trace: list[TraceStep]
+    eligibility: EligibilityResult | None = None
 
 class EvaluationResult(BaseModel):
     id: str

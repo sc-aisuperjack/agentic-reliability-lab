@@ -88,6 +88,8 @@ If Render assigns different service URLs, update VITE_API_URL in the static site
 
 ## Limitations
 
+Synthetic refund eligibility uses a fixed simulation date of 17 November 2026, not the current date. Eligibility assessments do not issue refunds or change orders. Missing order facts cannot be supplied through a trusted data source in this stateless demo.
+
 Fictional businesses and records only. The public tenant selector is not real authentication. Known-phrase safety rules do not solve general prompt injection. Document identifiers are verified against selected knowledge but not semantically scored. No real handoffs or LLM calls occur.
 
 ## Next development milestone

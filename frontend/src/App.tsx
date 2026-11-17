@@ -28,6 +28,7 @@ type Run = {
   trace: Trace[];
   citations: Citation[];
   evidence_count: number;
+  eligibility?: { status: string; assessment_date: string | null } | null;
 };
 type Case = {
   id: string;
@@ -46,14 +47,22 @@ type Report = {
   results: Case[];
 };
 type Spec = {
+  id: string;
+  feature: string;
   documents: { name: string; purpose: string }[];
   requirements: { id: string; text: string; proof: string }[];
+  additional_specifications?: Spec[];
 };
 type Message = { role: "user" | "assistant"; text: string; decision?: string };
 const BASE =
   (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") ||
   "http://localhost:8010";
 const scenarios = [
+  {
+    name: "Refund eligibility",
+    text: "Is order ORD-1001 eligible for a refund?",
+    tenant: "atlas" as Tenant,
+  },
   {
     name: "Grounded refund answer",
     text: "What is the refund policy?",
@@ -392,6 +401,13 @@ export default function App() {
                           <small>SOURCES</small>
                           <strong>{run.evidence_count}</strong>
                         </div>
+                        {run.eligibility && (
+                          <div>
+                            <small>ELIGIBILITY</small>
+                            <strong>{run.eligibility.status.replaceAll("_", " ")}</strong>
+                            {run.eligibility.assessment_date && <small>Simulation date: {run.eligibility.assessment_date}</small>}
+                          </div>
+                        )}
                       </div>
                       <div className="trace">
                         {run.trace.map((s, i) => (
@@ -443,7 +459,7 @@ export default function App() {
                 <div>
                   <strong>Versioned behavioural evaluation suite</strong>
                   <p>
-                    14 scenarios checking grounding, tool use, tenant
+                    Scenarios checking grounding, eligibility, tool use, tenant
                     boundaries, abstention and escalation.
                   </p>
                 </div>
@@ -550,6 +566,25 @@ export default function App() {
                   ))}
                 </div>
               </div>
+              {(spec?.additional_specifications || []).map((additional) => (
+                <div key={additional.id}>
+                  <div className="section-title">{additional.id} · {additional.feature}</div>
+                  <div className="spec-columns">
+                    <div className="panel specs">
+                      <h3>Specification files</h3>
+                      {additional.documents.map((d) => (
+                        <div key={d.name}><BookOpen size={18} /><span><strong>{d.name}</strong><small>{d.purpose}</small></span></div>
+                      ))}
+                    </div>
+                    <div className="panel requirements">
+                      <h3>Requirement → proof</h3>
+                      {additional.requirements.map((r) => (
+                        <div key={r.id}><small>{r.id}</small><strong>{r.text}</strong><span>{r.proof}</span></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </>
           )}
         </div>

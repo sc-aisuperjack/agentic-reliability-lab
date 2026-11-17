@@ -39,7 +39,8 @@ def test_request_validation():
 
 def test_evaluations():
     body = client.post("/api/evaluations/run").json()
-    assert body["total"] == 14 and body["failed"] == 0
+    assert body["total"] >= 14 and body["failed"] == 0
+    assert {f"EV-{number:03d}" for number in range(1, 15)} <= {result["id"] for result in body["results"]}
 
 def test_specs_have_evidence():
     body = client.get("/api/specifications").json()

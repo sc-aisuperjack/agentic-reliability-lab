@@ -47,4 +47,8 @@ def specifications():
                 {"id": "REQ-003", "text": "Abstain on unsupported questions.", "proof": "EV-009, EV-013"},
                 {"id": "REQ-004", "text": "Expose ordered routing and tool traces.", "proof": "test_trace_present"},
                 {"id": "REQ-005", "text": "Reject known instruction override attempts.", "proof": "EV-008"},
-                {"id": "REQ-006", "text": "Run deterministic evaluations in CI.", "proof": "CI quality gate"}]}
+                {"id": "REQ-006", "text": "Run deterministic evaluations in CI.", "proof": "CI quality gate"}],
+            "additional_specifications": [{"id": "SPEC-002", "feature": "Refund eligibility",
+                "documents": [{"name": "intent.md", "purpose": "Synthetic refund eligibility intent"}, {"name": "spec.md", "purpose": "Eligibility requirements"}, {"name": "plan.md", "purpose": "Implementation and verification"}, {"name": "ADR-002", "purpose": "Architecture and trade-offs"}],
+                "requirements": [{"id": f"REQ-{number:03d}", "text": description, "proof": "test_refund_eligibility.py"} for number, description in [
+                    (7, "Route refund eligibility questions."), (8, "Clarify missing order references."), (9, "Isolate tenants."), (10, "Select the authorised policy."), (11, "Assess eligible orders."), (12, "Explain ineligible orders."), (13, "Do not assume missing evidence."), (14, "Do not execute refunds."), (15, "Cite policy and trace operations."), (16, "Preserve existing workflows.")]]}]}

@@ -19,6 +19,18 @@ CASES = [
     ("EV-014", "Isolation", "Reverse tenant lookup", "beacon", "Track order ORD-1001", "blocked", None),
 ]
 
+ELIGIBILITY_CASES = [
+    ("EV-015", "Atlas eligible", "atlas", "ORD-1010", "eligible", "eligible", "AT-REF-01"),
+    ("EV-016", "Atlas expired", "atlas", "ORD-1011", "ineligible", "window", "AT-REF-01"),
+    ("EV-017", "Atlas used", "atlas", "ORD-1012", "ineligible", "used", "AT-REF-01"),
+    ("EV-018", "Missing condition", "atlas", "ORD-1013", "needs_more_information", "condition", "AT-REF-01"),
+    ("EV-019", "Beacon eligible", "beacon", "ORD-2010", "eligible", "eligible", "BE-REF-01"),
+    ("EV-020", "Beacon expired", "beacon", "ORD-2011", "ineligible", "window", "BE-REF-01"),
+    ("EV-021", "Already refunded", "beacon", "ORD-2001", "already_refunded", "already refunded", "BE-REF-01"),
+    ("EV-022", "Undelivered", "atlas", "ORD-1002", "ineligible", "delivered", "AT-REF-01"),
+    ("EV-023", "Missing delivery date", "atlas", "ORD-1014", "needs_more_information", "date", "AT-REF-01"),
+]
+
 def run_evaluations() -> EvaluationReport:
     results = []
     for case_id, category, name, tenant, prompt, expected, citation in CASES:
@@ -28,6 +40,15 @@ def run_evaluations() -> EvaluationReport:
         results.append(EvaluationResult(id=case_id, category=category, name=name,
                                         passed=passed, expected=expected, actual=response.decision,
                                         explanation="All assertions met" if passed else "Behaviour differs from contract"))
+    for case_id, name, tenant, order, expected, reason, citation in ELIGIBILITY_CASES:
+        response = run_agent(RunRequest(message=f"Is order {order} eligible for a refund?", tenant=tenant))
+        actual = response.eligibility.status if response.eligibility else "missing"
+        tools = [step.tool for step in response.trace]
+        passed = (actual == expected and reason in response.answer.lower()
+                  and any(c.source_id == citation for c in response.citations)
+                  and tools[-4:] == ["knowledge_search", "eligibility_assessment", "citation_validator", "response_guard"])
+        results.append(EvaluationResult(id=case_id, category="Eligibility", name=name, expected=expected, actual=actual,
+                                        passed=passed, explanation="All assertions met" if passed else "Behaviour differs from contract"))
     passed = sum(result.passed for result in results)
     return EvaluationReport(total=len(results), passed=passed,
                             failed=len(results)-passed, pass_rate=round(passed*100/len(results), 1),
