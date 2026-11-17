@@ -16,7 +16,7 @@
 
 ## Architecture
 
-~~~mermaid
+```mermaid
 flowchart TD
     UI[React Static Site] -->|HTTPS| API[FastAPI Backend]
     API --> ORCH[Policy-based Orchestrator]
@@ -26,7 +26,7 @@ flowchart TD
     API --> EVAL[Versioned Evaluations]
     CI[GitHub Actions] --> EVAL
     CI --> TESTS[pytest and TypeScript]
-~~~
+```
 
 ## Run locally
 
@@ -36,41 +36,41 @@ Requires **Python 3.14** and Node.js 22+. Python 3.14.10 is pinned in `backend/.
 
 From the repository root:
 
-~~~powershell
+```powershell
 cd backend
 py -3.14 --version
 py -3.14 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 .\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000
-~~~
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8010
+```
 
 If `backend/.venv` already exists from Python 3.12, **delete that old virtual environment first** (`Remove-Item -Recurse -Force .venv` while inside `backend`, with any running interpreter stopped) and recreate it with `py -3.14 -m venv .venv`. VS Code: **Python: Select Interpreter** → `backend\\.venv\\Scripts\\python.exe`.
 
 ### Linux / macOS
 
-~~~bash
+```bash
 cd backend
 python3.14 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements-dev.txt
 python -m pytest -q
-python -m uvicorn app.main:app --reload --port 8000
-~~~
+python -m uvicorn app.main:app --reload --port 8010
+```
 
-API docs at http://localhost:8000/docs; GET `/health` returns the actual `python_version`.
+API docs at http://localhost:8010/docs; GET `/health` returns the actual `python_version`.
 
 ### React frontend (second terminal, repository root)
 
-~~~bash
+```bash
 cd frontend
 npm install
 npm run dev
-~~~
+```
 
-Open http://localhost:5173. The frontend uses `VITE_API_URL` if set; otherwise it calls `http://localhost:8000`. See `frontend/.env.example`.
+Open http://localhost:5173. The frontend uses `VITE_API_URL` if set; otherwise it calls `http://localhost:8010`. See `frontend/.env.example`.
 
-Open http://localhost:5173. The frontend uses VITE_API_URL if set; otherwise it calls localhost:8000. See frontend/.env.example.
+Open http://localhost:5173. The frontend uses VITE_API_URL if set; otherwise it calls localhost:8010. See frontend/.env.example.
 
 ## Render deployment
 
