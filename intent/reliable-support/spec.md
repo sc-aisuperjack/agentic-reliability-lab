@@ -1,9 +1,15 @@
 # SPEC-001 — Behavioural contract
 
-**Status:** approved for demonstration.
+**Status:** Implemented  
+**Version:** 1.0.0  
+**Created:** 2026-11-17  
+**Last Updated:** 2026-11-17  
+**Owner:** Engineering Lead  
+**Related Intent:** INTENT-001  
+**Related Plan:** PLAN-001
 
 | Requirement | Behaviour | Acceptance evidence |
-|---|---|---|
+| --- | --- | --- |
 | REQ-001 | SHALL only answer when authorised tenant policy evidence exists, including source citation. | EV-001, EV-002, EV-003, EV-004 |
 | REQ-002 | SHALL deny a synthetic order lookup when the tenant does not match. | EV-007, EV-014 |
 | REQ-003 | SHALL abstain when authorised evidence or synthetic records do not exist. | EV-009, EV-013 |
@@ -14,6 +20,7 @@
 Additional cases: missing order reference produces clarification (EV-005); valid synthetic order uses a lookup (EV-006); explicit human request produces simulated handoff without claiming a real ticket (EV-010); policy results remain tenant-specific (EV-011, EV-012).
 
 ## Known limitations
+
 - Deterministic keyword routing is not an LLM agent.
 - Known-phrase instruction blocking is not comprehensive prompt-injection defence.
 - Valid citation references do not guarantee semantic entailment.

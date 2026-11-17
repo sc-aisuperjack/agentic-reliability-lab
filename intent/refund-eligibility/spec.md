@@ -1,46 +1,34 @@
 # SPEC-002: Refund Eligibility
 
-Status: Proposed
-Related intent: INTENT-002
+**Status:** Implemented  
+**Version:** 1.0.0  
+**Created:** 2026-11-17  
+**Last Updated:** 2026-11-17  
+**Owner:** Engineering Lead  
+**Related Intent:** INTENT-002  
+**Related Plan:** PLAN-002
 
 ## Behavioural requirements
 
-REQ-007: Refund intent recognition
-WHEN a user asks about refund eligibility for an order,
-THE SYSTEM SHALL route the request to the refund eligibility workflow.
+REQ-007: Refund intent recognition WHEN a user asks about refund eligibility for an order, THE SYSTEM SHALL route the request to the refund eligibility workflow.
 
-REQ-008: Missing order reference
-WHEN a refund eligibility question lacks an order ID,
-THE SYSTEM SHALL request clarification.
+REQ-008: Missing order reference WHEN a refund eligibility question lacks an order ID, THE SYSTEM SHALL request clarification.
 
-REQ-009: Tenant isolation
-WHEN an order belongs to another tenant,
-THE SYSTEM SHALL deny access without exposing the order's details.
+REQ-009: Tenant isolation WHEN an order belongs to another tenant, THE SYSTEM SHALL deny access without exposing the order's details.
 
-REQ-010: Policy selection
-WHEN evaluating an order,
-THE SYSTEM SHALL use the selected tenant's authorised refund policy.
+REQ-010: Policy selection WHEN evaluating an order, THE SYSTEM SHALL use the selected tenant's authorised refund policy.
 
-REQ-011: Eligibility assessment
-WHEN the order is delivered, unused, and within the permitted return period,
-THE SYSTEM SHALL classify it as eligible.
+REQ-011: Eligibility assessment WHEN the order is delivered, unused, and within the permitted return period, THE SYSTEM SHALL classify it as eligible.
 
-REQ-012: Ineligible orders
-WHEN the item is used, outside the return period, or not yet delivered,
-THE SYSTEM SHALL return the applicable ineligibility reason.
+REQ-012: Ineligible orders WHEN the item is used, outside the return period, or not yet delivered, THE SYSTEM SHALL return the applicable ineligibility reason.
 
-REQ-013: Missing evidence
-WHEN required order or condition information is unavailable,
-THE SYSTEM SHALL ask for clarification or abstain rather than assume eligibility.
+REQ-013: Missing evidence WHEN required order or condition information is unavailable, THE SYSTEM SHALL ask for clarification or abstain rather than assume eligibility.
 
-REQ-014: Refund execution boundary
-THE SYSTEM SHALL NOT issue a refund, change an order, or claim a financial action has occurred.
+REQ-014: Refund execution boundary THE SYSTEM SHALL NOT issue a refund, change an order, or claim a financial action has occurred.
 
-REQ-015: Explainability
-THE SYSTEM SHALL include the relevant policy reference and ordered execution trace when making an eligibility determination.
+REQ-015: Explainability THE SYSTEM SHALL include the relevant policy reference and ordered execution trace when making an eligibility determination.
 
-REQ-016: Regression protection
-THE SYSTEM SHALL preserve existing refund-policy answers, order tracking and other supported workflows.
+REQ-016: Regression protection THE SYSTEM SHALL preserve existing refund-policy answers, order tracking and other supported workflows.
 
 ## Evaluation rules
 
