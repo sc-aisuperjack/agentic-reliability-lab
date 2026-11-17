@@ -1,4 +1,4 @@
-# Review the actual plan in Render before approving service creation.
+# Free-tier deployment. Review Render's quoted plan before approval.
 services:
   - type: web
     name: agentic-reliability-api
@@ -12,7 +12,10 @@ services:
       - key: PYTHON_VERSION
         value: 3.12.8
       - key: CORS_ORIGINS
-        value: https://agentic-reliability-lab.onrender.com
+        fromService:
+          type: web
+          name: agentic-reliability-lab
+          envVarKey: RENDER_EXTERNAL_URL
   - type: web
     name: agentic-reliability-lab
     runtime: static
@@ -21,7 +24,10 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://agentic-reliability-api.onrender.com
+        fromService:
+          type: web
+          name: agentic-reliability-api
+          envVarKey: RENDER_EXTERNAL_URL
     routes:
       - type: rewrite
         source: /*
