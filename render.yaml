@@ -1,34 +1,38 @@
-# Free-tier deployment. Review Render's quoted plan before approval.
-services:
-  - type: web
-    name: agentic-reliability-api
-    runtime: python
-    plan: free
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /health
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.12.8
-      - key: CORS_ORIGINS
-        fromService:
-          type: web
-          name: agentic-reliability-lab
-          envVarKey: RENDER_EXTERNAL_URL
-  - type: web
-    name: agentic-reliability-lab
-    runtime: static
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: agentic-reliability-api
-          envVarKey: RENDER_EXTERNAL_URL
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+# Deploy free-tier services to the existing Agentic Reliability Lab / Production environment.
+projects:
+  - name: Agentic Reliability Lab
+    environments:
+      - name: Production
+        services:
+          - type: web
+            name: agentic-reliability-api
+            runtime: python
+            plan: free
+            rootDir: backend
+            buildCommand: pip install -r requirements.txt
+            startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+            healthCheckPath: /health
+            envVars:
+              - key: PYTHON_VERSION
+                value: 3.12.8
+              - key: CORS_ORIGINS
+                fromService:
+                  type: web
+                  name: agentic-reliability-lab
+                  envVarKey: RENDER_EXTERNAL_URL
+          - type: web
+            name: agentic-reliability-lab
+            runtime: static
+            rootDir: frontend
+            buildCommand: npm install && npm run build
+            staticPublishPath: dist
+            envVars:
+              - key: VITE_API_URL
+                fromService:
+                  type: web
+                  name: agentic-reliability-api
+                  envVarKey: RENDER_EXTERNAL_URL
+            routes:
+              - type: rewrite
+                source: /*
+                destination: /index.html
