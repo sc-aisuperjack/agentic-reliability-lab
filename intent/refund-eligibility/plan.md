@@ -1,6 +1,13 @@
 # PLAN-002 — Synthetic refund eligibility
 
-**Status:** Approved for implementation with the decisions below.
+**Status:** Implemented  
+**Version:** 1.0.0  
+**Created:** 2026-11-17  
+**Last Updated:** 2026-11-17  
+**Owner:** Engineering Lead  
+**Related Intent:** INTENT-002  
+**Related Specification:** SPEC-002  
+**Approval:** Approved
 
 ## Approved decisions
 

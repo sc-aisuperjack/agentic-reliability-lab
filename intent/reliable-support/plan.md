@@ -1,5 +1,14 @@
 # PLAN-001 — Implementation and verification
 
+**Status:** Implemented  
+**Version:** 1.0.0  
+**Created:** 2026-11-17  
+**Last Updated:** 2026-11-17  
+**Owner:** Engineering Lead  
+**Related Intent:** INTENT-001  
+**Related Specification:** SPEC-001  
+**Approval:** Approved
+
 1. Implement typed Pydantic request/response/citation/trace contracts.
 2. Implement explicit stages: intake, safety, routing, tenant-scoped tool, response validation.
 3. Add fictional policies and synthetic order fixtures; block cross-tenant record disclosure.
@@ -11,9 +20,8 @@
 
 ## Proof commands
 
-Backend: python -m pytest -q (from backend directory).
-Frontend: npm install && npm run build (from frontend directory).
-Acceptance: all 14 evaluation cases pass.
+Backend: python -m pytest -q (from backend directory). Frontend: npm install && npm run build (from frontend directory). Acceptance: all 14 evaluation cases pass.
 
 ## Future (not implemented)
+
 Optional LLM adapter, bounded tool calls, model-cost controls, stronger security, multi-turn state and observability.
