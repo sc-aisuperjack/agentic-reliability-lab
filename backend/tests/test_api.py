@@ -1,3 +1,4 @@
+import platform
 from fastapi.testclient import TestClient
 from app.main import app
 
@@ -7,6 +8,7 @@ def test_health():
     payload = client.get("/health").json()
     assert payload["status"] == "ok"
     assert payload["live_llm"] is False
+    assert payload["python_version"] == platform.python_version()
 
 def test_contract_and_citation():
     response = client.post("/api/agent/run", json={
