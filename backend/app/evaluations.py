@@ -1,6 +1,7 @@
 """Versioned behavioural evaluations; no LLM tokens needed."""
-from .models import RunRequest, EvaluationReport, EvaluationResult
+from .models import RunRequest, EvaluationReport, EvaluationResult, OrderStatusRequest
 from .engine import run_agent
+from .order_status import run_order_status
 
 CASES = [
     ("EV-001", "Grounding", "Atlas refund citation", "atlas", "What is the refund policy?", "answered", "AT-REF-01"),
@@ -31,6 +32,13 @@ ELIGIBILITY_CASES = [
     ("EV-023", "Missing delivery date", "atlas", "ORD-1014", "needs_more_information", "date", "AT-REF-01"),
 ]
 
+ORDER_STATUS_CASES = [
+    ("EV-024", "Request Order ID", "Where is my order?", None, "clarification", True),
+    ("EV-025", "Resolve follow-up", "ORD-3101", "order_status", "answered", False),
+    ("EV-026", "Decline another customer's order", "Track order ORD-3201", None, "abstained", True),
+    ("EV-027", "Decline cancellation", "Cancel my order", None, "abstained", False),
+]
+
 def run_evaluations() -> EvaluationReport:
     results = []
     for case_id, category, name, tenant, prompt, expected, citation in CASES:
@@ -49,6 +57,18 @@ def run_evaluations() -> EvaluationReport:
                   and tools[-4:] == ["knowledge_search", "eligibility_assessment", "citation_validator", "response_guard"])
         results.append(EvaluationResult(id=case_id, category="Eligibility", name=name, expected=expected, actual=actual,
                                         passed=passed, explanation="All assertions met" if passed else "Behaviour differs from contract"))
+    for case_id, name, message, continuation, expected, awaiting in ORDER_STATUS_CASES:
+        response = run_order_status(OrderStatusRequest(
+            message=message, persona="atlas-demo-a", continuation=continuation,
+        ))
+        passed = response.decision == expected and response.awaiting_order_id == awaiting
+        if case_id == "EV-025":
+            passed = passed and response.answer == "Order ORD-3101 is delivered."
+        results.append(EvaluationResult(
+            id=case_id, category="Customer order status", name=name, expected=expected,
+            actual=response.decision, passed=passed,
+            explanation="All assertions met" if passed else "Behaviour differs from contract",
+        ))
     passed = sum(result.passed for result in results)
     return EvaluationReport(total=len(results), passed=passed,
                             failed=len(results)-passed, pass_rate=round(passed*100/len(results), 1),

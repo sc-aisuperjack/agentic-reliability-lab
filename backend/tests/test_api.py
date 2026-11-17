@@ -45,3 +45,11 @@ def test_evaluations():
 def test_specs_have_evidence():
     body = client.get("/api/specifications").json()
     assert all(item["proof"] for item in body["requirements"])
+
+def test_order_status_spec_has_acceptance_evidence():
+    body = client.get("/api/specifications").json()
+    spec = next(item for item in body["additional_specifications"] if item["id"] == "SPEC-003")
+    assert [item["id"] for item in spec["requirements"]] == [
+        f"REQ-{number:03d}" for number in range(17, 24)
+    ]
+    assert all("test_order_status.py" in item["proof"] for item in spec["requirements"])

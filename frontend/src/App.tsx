@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   Activity,
   ArrowRight,
@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 
 type Tenant = "atlas" | "beacon";
+type WorkflowMode = "support" | "order_status";
+type DemoPersona = "atlas-demo-a" | "atlas-demo-b" | "beacon-demo-a";
 type Tab = "playground" | "evaluations" | "specifications";
 type Trace = { stage: string; tool: string; outcome: string; detail: string };
 type Citation = { source_id: string; title: string; quote: string };
@@ -29,6 +31,7 @@ type Run = {
   citations: Citation[];
   evidence_count: number;
   eligibility?: { status: string; assessment_date: string | null } | null;
+  awaiting_order_id?: boolean;
 };
 type Case = {
   id: string;
@@ -94,6 +97,15 @@ const scenarios = [
     tenant: "beacon" as Tenant,
   },
 ];
+const demoOrderIds: Record<DemoPersona, string> = {
+  "atlas-demo-a": "ORD-3101",
+  "atlas-demo-b": "ORD-3201",
+  "beacon-demo-a": "ORD-3301",
+};
+const orderStatusScenarios: { name: string; text: string; tenant?: Tenant }[] = [
+  { name: "Ask for order status", text: "Where is my order?" },
+  { name: "Ask to cancel an order", text: "Please cancel my order" },
+];
 async function api<T>(path: string, post?: unknown): Promise<T> {
   const response = await fetch(
     BASE + path,
@@ -133,6 +145,10 @@ function Metric({
 export default function App() {
   const [tab, setTab] = useState<Tab>("playground");
   const [tenant, setTenant] = useState<Tenant>("atlas");
+  const [workflowMode, setWorkflowMode] = useState<WorkflowMode>("support");
+  const [persona, setPersona] = useState<DemoPersona>("atlas-demo-a");
+  const [awaitingOrderId, setAwaitingOrderId] = useState(false);
+  const conversationVersion = useRef(0);
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -157,18 +173,33 @@ export default function App() {
         .then(setSpec)
         .catch(() => setError("Cannot load specification endpoint"));
   }, [tab, spec]);
-  async function submit(text: string, org: Tenant) {
+  function resetConversation() {
+    conversationVersion.current += 1;
+    setAwaitingOrderId(false);
+    setRun(null);
+    setDraft("");
+    setMessages([]);
+    setError("");
+  }
+  async function submit(text: string, org: Tenant, continueOrderStatus = false) {
     if (!text.trim() || busy) return;
+    if (workflowMode === "support" && org !== tenant) resetConversation();
+    const version = conversationVersion.current;
     setBusy(true);
     setError("");
     setDraft("");
     setTenant(org);
     setMessages((old) => [...old, { role: "user", text }]);
     try {
-      const result = await api<Run>("/api/agent/run", {
-        message: text,
-        tenant: org,
-      });
+      const result = workflowMode === "order_status"
+        ? await api<Run>("/api/order-status/run", {
+            message: text,
+            persona,
+            continuation: continueOrderStatus ? "order_status" : undefined,
+          })
+        : await api<Run>("/api/agent/run", { message: text, tenant: org });
+      if (version !== conversationVersion.current) return;
+      setAwaitingOrderId(result.awaiting_order_id === true);
       setRun(result);
       setOnline(true);
       setMessages((old) => [
@@ -176,6 +207,7 @@ export default function App() {
         { role: "assistant", text: result.answer, decision: result.decision },
       ]);
     } catch (e) {
+      if (version !== conversationVersion.current) return;
       setOnline(false);
       setError(e instanceof Error ? e.message : "API unavailable");
     } finally {
@@ -184,7 +216,7 @@ export default function App() {
   }
   function send(event: FormEvent) {
     event.preventDefault();
-    void submit(draft, tenant);
+    void submit(draft, tenant, awaitingOrderId);
   }
   async function evaluate() {
     setBusy(true);
@@ -303,32 +335,67 @@ export default function App() {
               </div>
               <div className="columns">
                 <section className="panel conversation">
-                  <div className="panel-title">
+                  <div className="panel-title conversation-title">
                     <div>
                       <strong>
                         <MessageSquareText size={18} /> Conversation
                       </strong>
-                      <small>Test a fictional customer's question</small>
+                      <small>
+                        {workflowMode === "support"
+                          ? "Tenant-scoped support demo"
+                          : "Anyone can choose a fictional customer to simulate an authenticated request."}
+                      </small>
                     </div>
                     <label>
-                      TENANT{" "}
+                      Workflow{" "}
                       <select
-                        value={tenant}
+                        value={workflowMode}
                         onChange={(e) => {
-                          setTenant(e.target.value as Tenant);
-                          setRun(null);
-                          setMessages([
-                            {
-                              role: "assistant",
-                              text: "Tenant switched; results are now scoped to that fictional organisation.",
-                            },
-                          ]);
+                          resetConversation();
+                          setWorkflowMode(e.target.value as WorkflowMode);
                         }}
                       >
-                        <option value="atlas">Atlas Retail</option>
-                        <option value="beacon">Beacon Commerce</option>
+                        <option value="support">Support</option>
+                        <option value="order_status">Customer order status</option>
                       </select>
                     </label>
+                    {workflowMode === "order_status" ? (
+                      <label>
+                        Demo persona{" "}
+                        <select
+                          value={persona}
+                          onChange={(e) => {
+                            resetConversation();
+                            setPersona(e.target.value as DemoPersona);
+                          }}
+                        >
+                          <option value="atlas-demo-a">Atlas demo customer A</option>
+                          <option value="atlas-demo-b">Atlas demo customer B</option>
+                          <option value="beacon-demo-a">Beacon demo customer A</option>
+                        </select>
+                        {awaitingOrderId && <small>Try {demoOrderIds[persona]}.</small>}
+                      </label>
+                    ) : (
+                      <label>
+                        Tenant{" "}
+                        <select
+                          value={tenant}
+                          onChange={(e) => {
+                            setTenant(e.target.value as Tenant);
+                            resetConversation();
+                            setMessages([
+                              {
+                                role: "assistant",
+                                text: "Tenant switched; results are now scoped to that fictional organisation.",
+                              },
+                            ]);
+                          }}
+                        >
+                          <option value="atlas">Atlas Retail</option>
+                          <option value="beacon">Beacon Commerce</option>
+                        </select>
+                      </label>
+                    )}
                   </div>
                   <div className="messages">
                     {messages.map((message, index) => (
@@ -357,7 +424,7 @@ export default function App() {
                       value={draft}
                       maxLength={2000}
                       onChange={(e) => setDraft(e.target.value)}
-                      placeholder="Ask about an order, policy or return..."
+                      placeholder={awaitingOrderId ? "Enter your demo Order ID" : "Ask about an order, policy or return..."}
                       aria-label="Customer message"
                     />
                     <button disabled={busy || !draft.trim()} aria-label="Send">
@@ -440,11 +507,11 @@ export default function App() {
                 QUICK-START SCENARIOS <span>Explore the workflow</span>
               </div>
               <div className="scenarios">
-                {scenarios.map((s) => (
+                {(workflowMode === "order_status" ? orderStatusScenarios : scenarios).map((s) => (
                   <button
                     key={s.name}
                     disabled={busy}
-                    onClick={() => void submit(s.text, s.tenant)}
+                    onClick={() => void submit(s.text, s.tenant ?? tenant)}
                   >
                     {s.name}
                     <ArrowRight size={17} />

@@ -1,7 +1,7 @@
 # SPEC-003 — Customer Order Status
 
-**Status:** Draft  
-**Version:** 0.1.0  
+**Status:** Approved\
+**Version:** 1.0.0\
 **Created:** 2026-11-17  
 **Last Updated:** 2026-11-17  
 **Owner:** Engineering Lead  

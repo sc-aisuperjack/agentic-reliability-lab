@@ -36,6 +36,14 @@ class RunResponse(BaseModel):
     trace: list[TraceStep]
     eligibility: EligibilityResult | None = None
 
+class OrderStatusRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=2000)
+    persona: str | None = Field(default=None, max_length=80)
+    continuation: Literal["order_status"] | None = None
+
+class OrderStatusResponse(RunResponse):
+    awaiting_order_id: bool = False
+
 class EvaluationResult(BaseModel):
     id: str
     name: str
