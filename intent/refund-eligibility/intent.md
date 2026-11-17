@@ -9,8 +9,6 @@
 **Target Release:** Refund Eligibility Feature  
 **Released:** 2026-11-17
 
-Status: Proposed Owner: Engineering Lead Feature: Refund Eligibility
-
 ## Problem
 
 The existing application explains general refund policies and can look up synthetic orders.

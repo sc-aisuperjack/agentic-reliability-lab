@@ -9,8 +9,6 @@
 **Target Release:** Initial demonstration  
 **Released:** 2026-11-17
 
-**Status:** approved for reference implementation.
-
 ## Why
 
 Agentic workflows are difficult to assess from a chat transcript alone. Engineers need to inspect decisions, tools, evidence, tenancy boundaries and reliability safeguards.
